@@ -12,7 +12,6 @@ namespace Famot.ScannerReportsService.SrsServices.Services
 {
     public class ScannerFileServices : IScannerFileServices
     {
-        private IEnumerable<ScannerFileDto> ownersDto;
         private readonly IMapper _mapper;
         private readonly RepositoryManager _repositoryManager;
 
