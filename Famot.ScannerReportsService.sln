@@ -15,6 +15,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03. DTO", "03. DTO", "{D42E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Famot.ScannerReportsService.DtoEntities", "Famot.ScannerReportsService.DtoEntities\Famot.ScannerReportsService.DtoEntities.csproj", "{2CAA61BD-0FF1-4755-9AF2-1A8CA5562762}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "04. Services", "04. Services", "{D817E0B0-A277-47C6-B7D9-5C74EA85B500}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Famot.ScannerReportsService.SrsServices", "Famot.ScannerReportsService.SrsServices\Famot.ScannerReportsService.SrsServices.csproj", "{755712FE-4E35-4A2C-B3AC-E6AEF4E5C32B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,10 @@ Global
 		{2CAA61BD-0FF1-4755-9AF2-1A8CA5562762}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2CAA61BD-0FF1-4755-9AF2-1A8CA5562762}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2CAA61BD-0FF1-4755-9AF2-1A8CA5562762}.Release|Any CPU.Build.0 = Release|Any CPU
+		{755712FE-4E35-4A2C-B3AC-E6AEF4E5C32B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{755712FE-4E35-4A2C-B3AC-E6AEF4E5C32B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{755712FE-4E35-4A2C-B3AC-E6AEF4E5C32B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{755712FE-4E35-4A2C-B3AC-E6AEF4E5C32B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -41,5 +49,6 @@ Global
 		{4CD80642-CC3E-4C70-B1D9-8BC36218C307} = {DEC476DB-452A-439F-A34C-DE79927B32DC}
 		{A47D8322-7132-4230-8255-9794ADC449D8} = {2AED030A-E92E-4E76-AB88-A2B7A76CCBEC}
 		{2CAA61BD-0FF1-4755-9AF2-1A8CA5562762} = {D42E9AD6-0F12-43D2-964A-BB2ECDF6274F}
+		{755712FE-4E35-4A2C-B3AC-E6AEF4E5C32B} = {D817E0B0-A277-47C6-B7D9-5C74EA85B500}
 	EndGlobalSection
 EndGlobal
