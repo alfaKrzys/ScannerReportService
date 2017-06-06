@@ -89,7 +89,7 @@ namespace Famot.ScannerReportsService.SrsServices.Services
                     var scannerFile = _repositoryManager.Repositories<ScannerFile>().GetByID(scannerFileId);
                     if (scannerFile != null)
                     {
-                        scannerFile = _mapper.Map<ScannerFileDto, ScannerFile>(scannerFileDto);
+                        scannerFile = _mapper.Map(scannerFileDto, scannerFile);
                         _repositoryManager.Repositories<ScannerFile>().Update(scannerFile);
                         _repositoryManager.Save();
                         scope.Complete();

@@ -7,6 +7,7 @@ using Famot.ScannerReportsService.UnitOfWork;
 using Famot.ScannerReportsService.SrsServices.Mapping;
 using System.Transactions;
 using Famot.ScannerReportsService.Entities;
+using System;
 
 namespace Famot.ScannerReportsService.SrsServices.Services
 {
@@ -22,6 +23,8 @@ namespace Famot.ScannerReportsService.SrsServices.Services
             {
                 cfg.AddProfile<OrderDtoToOrder>();
                 cfg.AddProfile<OrderToOrderDto>();
+                cfg.AddProfile<ScannerFileDtoToScannerFile>();
+                cfg.AddProfile<ScannerFileToScannerFileDto>();
             });
             _mapper = new Mapper(config);
         }
@@ -89,7 +92,8 @@ namespace Famot.ScannerReportsService.SrsServices.Services
                     var order = _repositoryManager.Repositories<Order>().GetByID(orderId);
                     if (order != null)
                     {
-                        order = _mapper.Map<OrderDto, Order>(orderDto);
+                        order = _mapper.Map(orderDto, order);
+                        UpdateScannerFiles(orderDto, order);
                         _repositoryManager.Repositories<Order>().Update(order);
                         _repositoryManager.Save();
                         scope.Complete();
@@ -98,6 +102,32 @@ namespace Famot.ScannerReportsService.SrsServices.Services
                 }
             }
             return success;
+        }
+
+        private void UpdateScannerFiles(OrderDto orderDto, Order order)
+        {
+            List<ScannerFile> updatedScannerFiles = new List<ScannerFile>();
+            foreach (var scannerFile in order.ScannerFiles.ToList())
+            {
+                if (!orderDto.ScannerFiles.Any(sf => sf.ScannerFileID == scannerFile.ScannerFileID))
+                {
+                    _repositoryManager.Repositories<ScannerFile>().Delete(scannerFile);
+                }
+            }
+            foreach (var scannerFile in orderDto.ScannerFiles)
+            {
+                var existingScannerFile = order.ScannerFiles.SingleOrDefault(sf => sf.ScannerFileID == scannerFile.ScannerFileID);
+                if (existingScannerFile == null)
+                {
+                    updatedScannerFiles.Add(_mapper.Map<ScannerFile>(scannerFile));
+                }
+                else
+                {
+                    _mapper.Map(existingScannerFile, scannerFile);
+                    updatedScannerFiles.Add(existingScannerFile);
+                }
+            }
+            order.ScannerFiles = updatedScannerFiles;
         }
     }
 }

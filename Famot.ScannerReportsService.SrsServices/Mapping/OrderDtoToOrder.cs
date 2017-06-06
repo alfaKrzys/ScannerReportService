@@ -8,7 +8,8 @@ namespace Famot.ScannerReportsService.SrsServices.Mapping
     {
         public OrderDtoToOrder()
         {
-            CreateMap<OrderDto, Order>();
+            CreateMap<OrderDto, Order>()
+                .ForMember(x => x.ScannerFiles, opt => opt.Ignore());
         }
     }
 }

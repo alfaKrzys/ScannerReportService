@@ -25,7 +25,8 @@ namespace Famot.ScannerReportsService.UnitOfWork.SrsDbContext
             modelBuilder.Entity<Order>()
                 .HasMany(o => o.ScannerFiles)
                 .WithRequired(sf => sf.Order)
-                .HasForeignKey(sf => sf.OrderID);
+                .HasForeignKey(sf => sf.OrderID)
+                .WillCascadeOnDelete(true);
         }
 
         public override int SaveChanges()
@@ -51,8 +52,11 @@ namespace Famot.ScannerReportsService.UnitOfWork.SrsDbContext
                     (entity.Entity as BaseEntity).DateCreated = DateTime.Now;
                     (entity.Entity as BaseEntity).UserCreated = currentUsername;
                 }
-                (entity.Entity as BaseEntity).DateModified = DateTime.Now;
-                (entity.Entity as BaseEntity).UserModified = currentUsername;
+                if (entity.State == EntityState.Modified)
+                {
+                    (entity.Entity as BaseEntity).DateModified = DateTime.Now;
+                    (entity.Entity as BaseEntity).UserModified = currentUsername;
+                }
             }
         }
     }
