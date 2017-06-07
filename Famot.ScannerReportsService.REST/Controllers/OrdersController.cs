@@ -44,7 +44,7 @@ namespace Famot.ScannerReportsService.REST.Controllers
         // POST: api/Orders
         public IHttpActionResult Post([FromBody]OrderDto order)
         {
-            if (order != null)
+            if (order != null || _orderServices.GetOrderById(order.OrderID) == null)
             {
                 order.OrderID = _orderServices.CreateOrder(order);
                 var location = new Uri(Url.Link("GetOrderById", new { id = order.OrderID }));
