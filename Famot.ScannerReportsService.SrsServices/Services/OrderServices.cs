@@ -32,7 +32,12 @@ namespace Famot.ScannerReportsService.SrsServices.Services
         {
             using (var scope = new TransactionScope())
             {
-                var order = _mapper.Map<OrderDto, Order>(orderDto);
+                Mapper.Initialize(cfg =>
+                {
+                    cfg.CreateMap<OrderDto, Order>();
+                    cfg.CreateMap<ScannerFileDto, ScannerFile>();
+                });
+                var order = Mapper.Map<OrderDto, Order>(orderDto);
                 _repositoryManager.Repositories<Order>().Insert(order);
                 _repositoryManager.Save();
                 scope.Complete();
