@@ -16,7 +16,7 @@ namespace Famot.ScannerReportsService.REST.App_Start
     public static class NinjectWebCommon 
     {
         private static readonly Bootstrapper bootstrapper = new Bootstrapper();
-
+        public static IKernel Kernel;
         /// <summary>
         /// Starts the application
         /// </summary>
@@ -41,18 +41,18 @@ namespace Famot.ScannerReportsService.REST.App_Start
         /// <returns>The created kernel.</returns>
         private static IKernel CreateKernel()
         {
-            var kernel = new StandardKernel();
+            Kernel = new StandardKernel();
             try
             {
-                kernel.Bind<Func<IKernel>>().ToMethod(ctx => () => new Bootstrapper().Kernel);
-                kernel.Bind<IHttpModule>().To<HttpApplicationInitializationHttpModule>();
+                Kernel.Bind<Func<IKernel>>().ToMethod(ctx => () => new Bootstrapper().Kernel);
+                Kernel.Bind<IHttpModule>().To<HttpApplicationInitializationHttpModule>();
 
-                RegisterServices(kernel);
-                return kernel;
+                RegisterServices();
+                return Kernel;
             }
             catch
             {
-                kernel.Dispose();
+                Kernel.Dispose();
                 throw;
             }
         }
@@ -61,10 +61,10 @@ namespace Famot.ScannerReportsService.REST.App_Start
         /// Load your modules or register your services here!
         /// </summary>
         /// <param name="kernel">The kernel.</param>
-        private static void RegisterServices(IKernel kernel)
+        private static void RegisterServices()
         {
-            kernel.Bind<IOrderServices>().To<OrderServices>();
-            kernel.Bind<IScannerFileServices>().To<ScannerFileServices>();
+            Kernel.Bind<IOrderServices>().To<OrderServices>();
+            Kernel.Bind<IScannerFileServices>().To<ScannerFileServices>();
         }
     }
 }

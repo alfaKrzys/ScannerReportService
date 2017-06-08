@@ -1,10 +1,9 @@
 ﻿using Famot.ScannerReportsService.DtoEntities;
+using Famot.ScannerReportsService.REST.App_Start;
+using Famot.ScannerReportsService.REST.Extensions;
 using Famot.ScannerReportsService.SrsServices.InterfacesServices;
+using Ninject;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 
 namespace Famot.ScannerReportsService.REST.Controllers
@@ -12,16 +11,18 @@ namespace Famot.ScannerReportsService.REST.Controllers
     [RoutePrefix("api/orders")]
     public class OrdersController : ApiController
     {
-        private readonly IOrderServices _orderServices;
+        [Inject]
+        public IOrderServices OrderServices { private get; set; }
 
-        public OrdersController(IOrderServices orderServices)
+        public OrdersController()
         {
-            _orderServices = orderServices;
+            NinjectWebCommon.Kernel.Inject(this);
         }
         // GET: api/Orders
+        [CustomAuthorize("ScannerReports", "read")]
         public IHttpActionResult Get()
         {
-            var orders = _orderServices.GetAllOrders();
+            var orders = OrderServices.GetAllOrders();
             if (orders == null)
             {
                 return NotFound();
@@ -31,9 +32,10 @@ namespace Famot.ScannerReportsService.REST.Controllers
 
         // GET: api/Orders/5
         [Route("{id:int}", Name = "GetOrderById")]
+        [CustomAuthorize("ScannerReports", "read")]
         public IHttpActionResult Get(int id)
         {
-            var order = _orderServices.GetOrderById(id);
+            var order = OrderServices.GetOrderById(id);
             if (order == null)
             {
                 return NotFound();
@@ -42,11 +44,12 @@ namespace Famot.ScannerReportsService.REST.Controllers
         }
 
         // POST: api/Orders
+        [CustomAuthorize("ScannerReports", "change")]
         public IHttpActionResult Post([FromBody]OrderDto order)
         {
-            if (order != null || _orderServices.GetOrderById(order.OrderID) == null)
+            if (order != null || OrderServices.GetOrderById(order.OrderID) == null)
             {
-                order.OrderID = _orderServices.CreateOrder(order);
+                order.OrderID = OrderServices.CreateOrder(order);
                 var location = new Uri(Url.Link("GetOrderById", new { id = order.OrderID }));
                 return Created(location, order);
             }
@@ -55,9 +58,10 @@ namespace Famot.ScannerReportsService.REST.Controllers
 
         // PUT: api/Orders/5
         [Route("{id:int}")]
+        [CustomAuthorize("ScannerReports", "change")]
         public IHttpActionResult Put(int id, [FromBody]OrderDto order)
         {
-            if (_orderServices.UpdateOrder(id, order))
+            if (OrderServices.UpdateOrder(id, order))
             {
                 return Ok();
             }
@@ -66,9 +70,10 @@ namespace Famot.ScannerReportsService.REST.Controllers
 
         // DELETE: api/Orders/5
         [Route("{id:int}")]
+        [CustomAuthorize("ScannerReports", "change")]
         public IHttpActionResult Delete(int id)
         {
-            if (_orderServices.DeleteOrder(id))
+            if (OrderServices.DeleteOrder(id))
             {
                 return Ok();
             }

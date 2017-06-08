@@ -2,6 +2,11 @@ using System.Web.Http;
 using WebActivatorEx;
 using Famot.ScannerReportsService.REST;
 using Swashbuckle.Application;
+using System.Collections.Generic;
+using System;
+using Swashbuckle.Swagger;
+using System.Web.Http.Description;
+using System.Linq;
 
 [assembly: PreApplicationStartMethod(typeof(SwaggerConfig), "Register")]
 
@@ -57,22 +62,21 @@ namespace Famot.ScannerReportsService.REST
                         //c.BasicAuth("basic")
                         //    .Description("Basic HTTP Authentication");
                         //
-						// NOTE: You must also configure 'EnableApiKeySupport' below in the SwaggerUI section
+                        // NOTE: You must also configure 'EnableApiKeySupport' below in the SwaggerUI section
                         //c.ApiKey("apiKey")
                         //    .Description("API Key Authentication")
                         //    .Name("apiKey")
                         //    .In("header");
                         //
-                        //c.OAuth2("oauth2")
-                        //    .Description("OAuth2 Implicit Grant")
-                        //    .Flow("implicit")
-                        //    .AuthorizationUrl("http://petstore.swagger.wordnik.com/api/oauth/dialog")
-                        //    //.TokenUrl("https://tempuri.org/token")
-                        //    .Scopes(scopes =>
-                        //    {
-                        //        scopes.Add("read", "Read access to protected resources");
-                        //        scopes.Add("write", "Write access to protected resources");
-                        //    });
+                        c.OAuth2("oauth2")
+                            .Description("OAuth2 Implicit Grant")
+                            .Flow("implicit")
+                            .AuthorizationUrl("https://sts-pw.corp.giag.net/connect/authorize")
+                            //.TokenUrl("https://tempuri.org/token")
+                            .Scopes(scopes =>
+                            {
+                                scopes.Add("ReportsScanner-rest", "Read access to protected resources");
+                            });
 
                         // Set this flag to omit descriptions for any actions decorated with the Obsolete attribute
                         //c.IgnoreObsoleteActions();
@@ -152,7 +156,7 @@ namespace Famot.ScannerReportsService.REST
                         // to inspect some attribute on each action and infer which (if any) OAuth2 scopes are required
                         // to execute the operation
                         //
-                        //c.OperationFilter<AssignOAuth2SecurityRequirements>();
+                        c.OperationFilter<AssignOAuth2SecurityRequirements>();
 
                         // Post-modify the entire Swagger document by wiring up one or more Document filters.
                         // This gives full control to modify the final SwaggerDocument. You should have a good understanding of
@@ -228,13 +232,13 @@ namespace Famot.ScannerReportsService.REST
                         // If your API supports the OAuth2 Implicit flow, and you've described it correctly, according to
                         // the Swagger 2.0 specification, you can enable UI support as shown below.
                         //
-                        //c.EnableOAuth2Support(
-                        //    clientId: "test-client-id",
-                        //    clientSecret: null,
-                        //    realm: "test-realm",
-                        //    appName: "Swagger UI"
-                        //    //additionalQueryStringParams: new Dictionary<string, string>() { { "foo", "bar" } }
-                        //);
+                        c.EnableOAuth2Support(
+                            clientId: "ReportsScanner-swagger",
+                            clientSecret: null,
+                            realm: "ReportsScanner-swagger",
+                            appName: "Swagger UI",
+                            additionalQueryStringParams: new Dictionary<string, string>() { { "nonce", Guid.NewGuid().ToString("N") } }
+                        );
 
                         // If your API supports ApiKey, you can override the default values.
                         // "apiKeyIn" can either be "query" or "header"                                                
@@ -245,6 +249,33 @@ namespace Famot.ScannerReportsService.REST
         protected static string GetXmlCommentsPath()
         {
             return System.String.Format(@"{0}\bin\Famot.ScannerReportsService.REST.XML", System.AppDomain.CurrentDomain.BaseDirectory);
+        }
+
+        public class AssignOAuth2SecurityRequirements : IOperationFilter
+        {
+            public void Apply(Operation operation, SchemaRegistry schemaRegistry, ApiDescription apiDescription)
+            {
+                var actFilters = apiDescription.ActionDescriptor.GetFilterPipeline();
+                var allowsAnonymous = actFilters.Select(f => f.Instance).OfType<OverrideAuthorizationAttribute>().Any();
+                if (allowsAnonymous)
+                    return; // must be an anonymous method
+
+
+                //var scopes = apiDescription.ActionDescriptor.GetFilterPipeline()
+                //    .Select(filterInfo => filterInfo.Instance)
+                //    .OfType<AllowAnonymousAttribute>()
+                //    .SelectMany(attr => attr.Roles.Split(','))
+                //    .Distinct();
+
+                if (operation.security == null)
+                    operation.security = new List<IDictionary<string, IEnumerable<string>>>();
+
+                var oAuthRequirements = new Dictionary<string, IEnumerable<string>>
+                {
+                    {"oauth2", new List<string> {"ReportsScanner-rest"}}
+                };
+                operation.security.Add(oAuthRequirements);
+            }
         }
     }
 }
