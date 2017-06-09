@@ -7,6 +7,7 @@ using System;
 using Swashbuckle.Swagger;
 using System.Web.Http.Description;
 using System.Linq;
+using System.Configuration;
 
 [assembly: PreApplicationStartMethod(typeof(SwaggerConfig), "Register")]
 
@@ -71,11 +72,11 @@ namespace Famot.ScannerReportsService.REST
                         c.OAuth2("oauth2")
                             .Description("OAuth2 Implicit Grant")
                             .Flow("implicit")
-                            .AuthorizationUrl("https://sts-pw.corp.giag.net/connect/authorize")
+                            .AuthorizationUrl(ConfigurationManager.AppSettings["StsServer"] + "connect/authorize")
                             //.TokenUrl("https://tempuri.org/token")
                             .Scopes(scopes =>
                             {
-                                scopes.Add("ReportsScanner-rest", "Read access to protected resources");
+                                scopes.Add(ConfigurationManager.AppSettings["Scope"], "Read access to protected resources");
                             });
 
                         // Set this flag to omit descriptions for any actions decorated with the Obsolete attribute
@@ -233,9 +234,9 @@ namespace Famot.ScannerReportsService.REST
                         // the Swagger 2.0 specification, you can enable UI support as shown below.
                         //
                         c.EnableOAuth2Support(
-                            clientId: "ReportsScanner-swagger",
+                            clientId: ConfigurationManager.AppSettings["SwaggerClientId"],
                             clientSecret: null,
-                            realm: "ReportsScanner-swagger",
+                            realm: ConfigurationManager.AppSettings["SwaggerClientId"],
                             appName: "Swagger UI",
                             additionalQueryStringParams: new Dictionary<string, string>() { { "nonce", Guid.NewGuid().ToString("N") } }
                         );
@@ -272,7 +273,7 @@ namespace Famot.ScannerReportsService.REST
 
                 var oAuthRequirements = new Dictionary<string, IEnumerable<string>>
                 {
-                    {"oauth2", new List<string> {"ReportsScanner-rest"}}
+                    {"oauth2", new List<string> {ConfigurationManager.AppSettings["Scope"]}}
                 };
                 operation.security.Add(oAuthRequirements);
             }

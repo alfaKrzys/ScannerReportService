@@ -11,8 +11,8 @@ namespace Famot.ScannerReportsService.REST.Extensions
 
         public CustomAuthorize(string type, string value)
         {
-            this._claimType = type;
-            this._claimValue = value;
+            _claimType = type;
+            _claimValue = value;
         }
 
         public override void OnAuthorization(HttpActionContext actionContext)

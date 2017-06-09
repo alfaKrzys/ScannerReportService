@@ -1,6 +1,7 @@
 ﻿using IdentityServer3.AccessTokenValidation;
 using Microsoft.Owin;
 using Owin;
+using System.Configuration;
 using System.Web.Http;
 
 [assembly: OwinStartup(typeof(Famot.ScannerReportsService.REST.Startup))]
@@ -13,10 +14,10 @@ namespace Famot.ScannerReportsService.REST
             // accept access tokens from identityserver and require a scope of 'api1'
             app.UseIdentityServerBearerTokenAuthentication(new IdentityServerBearerTokenAuthenticationOptions
             {
-                Authority = "https://sts-pw.corp.giag.net/",
+                Authority = ConfigurationManager.AppSettings["StsServer"],
                 ValidationMode = ValidationMode.ValidationEndpoint,
 
-                RequiredScopes = new[] { "ReportsScanner-rest" }
+                RequiredScopes = new[] { ConfigurationManager.AppSettings["Scope"] }
             });
 
             // configure web api
