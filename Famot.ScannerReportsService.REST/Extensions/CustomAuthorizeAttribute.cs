@@ -4,12 +4,12 @@ using System.Web.Http.Controllers;
 
 namespace Famot.ScannerReportsService.REST.Extensions
 {
-    public class CustomAuthorize : AuthorizeAttribute
+    public class CustomAuthorizeAttribute : AuthorizeAttribute
     {
         private readonly string _claimType;
         private readonly string _claimValue;
 
-        public CustomAuthorize(string type, string value)
+        public CustomAuthorizeAttribute(string type, string value)
         {
             _claimType = type;
             _claimValue = value;

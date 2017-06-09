@@ -47,7 +47,7 @@ namespace Famot.ScannerReportsService.REST.Controllers
         [CustomAuthorize("ScannerReports", "change")]
         public IHttpActionResult Post([FromBody]OrderDto order)
         {
-            if (order != null || OrderServices.GetOrderById(order.OrderID) == null)
+            if (order != null && OrderServices.GetOrderById(order.OrderID) == null)
             {
                 order.OrderID = OrderServices.CreateOrder(order);
                 var location = new Uri(Url.Link("GetOrderById", new { id = order.OrderID }));
