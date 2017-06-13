@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="InterfacesServices\IOrderServices.cs" />
     <Compile Include="InterfacesServices\IScannerFileServices.cs" />
+    <Compile Include="Mapping\GetOrderScannerFileToScannerFileDto.cs" />
     <Compile Include="Mapping\OrderDtoToOrder.cs" />
     <Compile Include="Mapping\OrderToOrderDto.cs" />
     <Compile Include="Mapping\ScannerFileDtoToScannerFile.cs" />

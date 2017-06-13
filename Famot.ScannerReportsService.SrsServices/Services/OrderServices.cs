@@ -16,15 +16,15 @@ namespace Famot.ScannerReportsService.SrsServices.Services
         private readonly IMapper _mapper;
         private readonly RepositoryManager _repositoryManager;
 
-        public OrderServices()
+        public OrderServices(RepositoryManager repositoryManager)
         {
-            _repositoryManager = RepositoryManager.Instance;
+            _repositoryManager = repositoryManager;
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.AddProfile<OrderDtoToOrder>();
                 cfg.AddProfile<OrderToOrderDto>();
                 cfg.AddProfile<ScannerFileDtoToScannerFile>();
-                cfg.AddProfile<ScannerFileToScannerFileDto>();
+                cfg.AddProfile<GetOrderScannerFileToScannerFileDto>();
             });
             _mapper = new Mapper(config);
         }

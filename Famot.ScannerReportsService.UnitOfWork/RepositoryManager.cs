@@ -8,39 +8,29 @@ namespace Famot.ScannerReportsService.UnitOfWork
 {
     public sealed class RepositoryManager : IDisposable
     {
-        private static volatile RepositoryManager _instance;
-        private static object _syncRoot = new object();
+        private readonly object _save = new object();
         private bool _disposed = false;
-        private readonly SrsContext _context = new SrsContext();
+        private readonly SrsContext _context;
         private readonly Dictionary<Type, object> _repositories = new Dictionary<Type, object>();
 
-        public static RepositoryManager Instance
+        public RepositoryManager(SrsContext context)
         {
-            get
-            {
-                if (_instance == null)
-                {
-                    lock (_syncRoot)
-                    {
-                        if (_instance == null)
-                        {
-                            _instance = new RepositoryManager();
-                        }
-                    }
-                }
-                return _instance;
-            }
+            _context = context;
         }
 
         public IGenericRepository<TEntity> Repositories<TEntity>() where TEntity : class
         {
-            if (_repositories.Keys.Contains(typeof(TEntity)))
+            lock (_save)
             {
-                return _repositories[typeof(TEntity)] as IGenericRepository<TEntity>;
+                IGenericRepository<TEntity> repository;
+                if (_repositories.Keys.Contains(typeof(TEntity)))
+                {
+                    return _repositories[typeof(TEntity)] as IGenericRepository<TEntity>;
+                }
+                repository = new GenericRepository<TEntity>(_context);
+                _repositories.Add(typeof(TEntity), repository);
+                return repository;
             }
-            IGenericRepository<TEntity> repository = new GenericRepository<TEntity>(_context);
-            _repositories.Add(typeof(TEntity), repository);
-            return repository;
         }
 
         public void Save()

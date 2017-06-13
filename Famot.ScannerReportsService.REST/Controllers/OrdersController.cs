@@ -5,10 +5,12 @@ using Famot.ScannerReportsService.SrsServices.InterfacesServices;
 using Ninject;
 using System;
 using System.Web.Http;
+using System.Web.Http.Cors;
 
 namespace Famot.ScannerReportsService.REST.Controllers
 {
     [RoutePrefix("api/orders")]
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class OrdersController : ApiController
     {
         [Inject]
@@ -39,7 +41,7 @@ namespace Famot.ScannerReportsService.REST.Controllers
             if (order == null)
             {
                 return NotFound();
-            }
+            }            
             return Ok(order);
         }
 

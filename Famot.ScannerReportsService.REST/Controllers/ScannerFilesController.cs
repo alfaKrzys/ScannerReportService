@@ -4,11 +4,17 @@ using Famot.ScannerReportsService.REST.Extensions;
 using Famot.ScannerReportsService.SrsServices.InterfacesServices;
 using Ninject;
 using System;
+using System.IO;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Web.Http;
+using System.Web.Http.Cors;
 
 namespace Famot.ScannerReportsService.REST.Controllers
 {
     [RoutePrefix("api/scannerFiles")]
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class ScannerFilesController : ApiController
     {
         [Inject]
@@ -19,7 +25,7 @@ namespace Famot.ScannerReportsService.REST.Controllers
             NinjectWebCommon.Kernel.Inject(this);
         }
         // GET: api/ScannerFiles
-        [CustomAuthorize("ScannerReports", "read")]
+        //[CustomAuthorize("ScannerReports", "read")]
         public IHttpActionResult Get()
         {
             var scannerFiles = ScannerFileServices.GetAllScannerFiles();
@@ -33,14 +39,19 @@ namespace Famot.ScannerReportsService.REST.Controllers
         // GET: api/ScannerFiles/5
         [Route("{id:int}", Name = "GetScannerFileById")]
         [CustomAuthorize("ScannerReports", "read")]
-        public IHttpActionResult Get(int id)
+        public HttpResponseMessage Get(int id)
         {
             var scannerFile = ScannerFileServices.GetScannerFileById(id);
             if (scannerFile == null)
             {
-                return NotFound();
+                return Request.CreateResponse(HttpStatusCode.NotFound, "Błędne id.");
             }
-            return Ok(scannerFile);
+            HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
+            result.Content = new ByteArrayContent(scannerFile.File);
+            result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("inline");
+            result.Content.Headers.ContentDisposition.FileName = scannerFile.FileName;
+            result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/pdf");
+            return result;
         }
 
         // POST: api/ScannerFiles

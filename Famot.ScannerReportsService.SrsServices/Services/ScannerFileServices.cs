@@ -15,9 +15,9 @@ namespace Famot.ScannerReportsService.SrsServices.Services
         private readonly IMapper _mapper;
         private readonly RepositoryManager _repositoryManager;
 
-        public ScannerFileServices()
+        public ScannerFileServices(RepositoryManager repositoryManager)
         {
-            _repositoryManager = RepositoryManager.Instance;
+            _repositoryManager = repositoryManager;
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.AddProfile<ScannerFileDtoToScannerFile>();
